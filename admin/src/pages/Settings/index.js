@@ -1,24 +1,24 @@
 // admin/src/pages/Settings/index.js
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Alert } from '@strapi/design-system/Alert';
-import { Box } from '@strapi/design-system/Box';
-import { Button } from '@strapi/design-system/Button';
-import { Grid, GridItem } from '@strapi/design-system/Grid';
-import { ContentLayout, HeaderLayout } from '@strapi/design-system/Layout';
-import { Link } from '@strapi/design-system/Link';
-import { Stack } from '@strapi/design-system/Stack';
-import { TextInput } from '@strapi/design-system/TextInput';
-import { ToggleInput } from '@strapi/design-system/ToggleInput';
-import { Tooltip } from '@strapi/design-system/Tooltip';
-import { Typography } from '@strapi/design-system/Typography';
-import { LoadingIndicatorPage, useNotification } from '@strapi/helper-plugin';
-import { Check, Download, Key } from '@strapi/icons';
-import Information from '@strapi/icons/Information';
-import React, { useEffect, useState } from 'react';
-import instagramRequests from '../../api/instagram';
-import instagramBasicApiRequest from '../../api/instagramBasicApi';
-import pluginId from '../../pluginId';
-import generateAuthState from '../../utils/authState';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Alert } from "@strapi/design-system/Alert";
+import { Box } from "@strapi/design-system/Box";
+import { Button } from "@strapi/design-system/Button";
+import { Grid, GridItem } from "@strapi/design-system/Grid";
+import { ContentLayout, HeaderLayout } from "@strapi/design-system/Layout";
+import { Link } from "@strapi/design-system/Link";
+import { Stack } from "@strapi/design-system/Stack";
+import { TextInput } from "@strapi/design-system/TextInput";
+import { ToggleInput } from "@strapi/design-system/ToggleInput";
+import { Tooltip } from "@strapi/design-system/Tooltip";
+import { Typography } from "@strapi/design-system/Typography";
+import { LoadingIndicatorPage, useNotification } from "@strapi/helper-plugin";
+import { Check, Download, Key } from "@strapi/icons";
+import Information from "@strapi/icons/Information";
+import React, { useEffect, useState } from "react";
+import instagramRequests from "../../api/instagram";
+import instagramBasicApiRequest from "../../api/instagramBasicApi";
+import pluginId from "../../pluginId";
+import generateAuthState from "../../utils/authState";
 
 const Settings = () => {
   const [settings, setSettings] = useState({});
@@ -43,24 +43,24 @@ const Settings = () => {
     });
   };
   const checkAuthResponse = async () => {
-    if (window.location.pathname.split('/').pop() == 'auth') {
+    if (window.location.pathname.split("/").pop() == "auth") {
       const urlSearchParameters = new URLSearchParams(window.location.search);
-      const authCode = urlSearchParameters.get('code');
-      const authState = urlSearchParameters.get('state');
-      const error = urlSearchParameters.get('error');
-      const errorReason = urlSearchParameters.get('error_reason');
-      const errorDescription = urlSearchParameters.get('error_description');
+      const authCode = urlSearchParameters.get("code");
+      const authState = urlSearchParameters.get("state");
+      const error = urlSearchParameters.get("error");
+      const errorReason = urlSearchParameters.get("error_reason");
+      const errorDescription = urlSearchParameters.get("error_description");
 
       if (error) {
         toggleNotification({
-          type: 'warning',
-          message: 'Instagram API error: ' + errorDescription,
+          type: "warning",
+          message: "Instagram API error: " + errorDescription,
         });
       } else {
         setIsAuth(true);
         toggleNotification({
-          type: 'info',
-          message: 'Auth success, refreshing token in background',
+          type: "info",
+          message: "Auth success, refreshing token in background",
         });
         instagramBasicApiRequest
           .getShortLivedToken({
@@ -71,7 +71,7 @@ const Settings = () => {
           .then((res) => {
             getSettings();
             setIsAuth(false);
-            console.log('short lived token answer:');
+            console.log("short lived token answer:");
             console.log(res.data);
           });
       }
@@ -90,15 +90,14 @@ const Settings = () => {
         force: true,
       })
       .then((res) => {
-        console.log('download images success:');
+        console.log("download images success:");
         console.log(res.data);
 
         if (res.data.error !== undefined) {
           toggleNotification({
-            type: 'warning',
+            type: "warning",
             message: res.data.error.message,
           });
-          
         }
         getSettings();
         setIsDownloading(false);
@@ -107,8 +106,8 @@ const Settings = () => {
 
   const canAuthenticate = () => {
     return (
-      instagram_app_id != '' &&
-      instagram_app_secret != '' &&
+      instagram_app_id != "" &&
+      instagram_app_secret != "" &&
       instagram_app_id == settings.instagram_app_id &&
       instagram_app_secret == settings.instagram_app_secret
     );
@@ -119,13 +118,14 @@ const Settings = () => {
     openInstagramAuth(
       settings.instagram_app_id,
       oauth_redirect_url,
-      settings.state,
+      settings.state
     );
     setIsAuth(false);
   };
 
   const handleDonate = async () => {
-    if (typeof window !== 'undefined') window.open('https://www.buymeacoffee.com/ptrkps', '_blank');
+    if (typeof window !== "undefined")
+      window.open("https://www.buymeacoffee.com/ptrkps", "_blank");
   };
 
   const handleSubmit = async () => {
@@ -139,33 +139,33 @@ const Settings = () => {
     setSettings(res.data);
     setIsSaving(false);
     toggleNotification({
-      type: 'success',
-      message: 'Settings successfully updated',
+      type: "success",
+      message: "Settings successfully updated",
     });
     console.log(`state: ${settings.state}`);
     console.log(res.data);
   };
 
-  const admin_path = window.location.pathname.split('/')[1];
+  const admin_path = window.location.pathname.split("/")[1];
   const base_redirect_url =
     `${window.location.protocol}` +
     `//${window.location.host}` +
     `/${admin_path}` +
-    '/settings' +
+    "/settings" +
     `/${pluginId}`;
   const oauth_redirect_url = `${base_redirect_url}/auth`;
   const deauth_callback_url = `${base_redirect_url}/deauth`;
   const delete_request_url = `${base_redirect_url}/data-delete`;
 
   const openInstagramAuth = (instagram_app_id, oauth_redirect_url, state) => {
-    const instagram_auth_url = 'https://api.instagram.com/oauth/authorize';
+    const instagram_auth_url = "https://api.instagram.com/oauth/authorize";
     const url =
       `${instagram_auth_url}` +
       `?client_id=${instagram_app_id}` +
       `&redirect_uri=${oauth_redirect_url}` +
       `&scope=user_profile,user_media` +
       `&response_type=code&state=${state}`;
-    if (typeof window !== 'undefined') window.open(url, '_self');
+    if (typeof window !== "undefined") window.open(url, "_self");
   };
 
   return (
@@ -285,8 +285,8 @@ const Settings = () => {
               <Typography>
                 Instagram API settings for Basic Display API
               </Typography>
-              {(window.location.hostname == 'localhost' ||
-                window.location.protocol == 'http:') &&
+              {(window.location.hostname == "localhost" ||
+                window.location.protocol == "http:") &&
               isDevAlertShow ? (
                 <Alert
                   closeLabel="Close alert"
@@ -296,7 +296,7 @@ const Settings = () => {
                 >
                   Instagram API callback not working on localhost and http
                   protocol. Use public domain and https to connect your Strapi
-                  admin to Instagram API! You can use{' '}
+                  admin to Instagram API! You can use{" "}
                   <Link href="https://ngrok.com/">ngrok</Link> or similar to
                   generate public domain for your development environment!
                 </Alert>
@@ -324,8 +324,8 @@ const Settings = () => {
                     error={
                       instagram_app_id == null
                         ? undefined
-                        : instagram_app_id.length > 15
-                        ? 'Content is too long'
+                        : instagram_app_id.length > 16
+                        ? "Content is too long"
                         : undefined
                     }
                     onChange={(e) => setInstagramAppId(e.target.value)}
@@ -335,9 +335,9 @@ const Settings = () => {
                         <button
                           aria-label="Information about the App ID"
                           style={{
-                            border: 'none',
+                            border: "none",
                             padding: 0,
-                            background: 'transparent',
+                            background: "transparent",
                           }}
                         >
                           <Information aria-hidden={true} />
@@ -356,7 +356,7 @@ const Settings = () => {
                       instagram_app_secret == null
                         ? undefined
                         : instagram_app_secret.length > 32
-                        ? 'Content is too long'
+                        ? "Content is too long"
                         : undefined
                     }
                     onChange={(e) => setInstagramAppSecret(e.target.value)}
@@ -366,9 +366,9 @@ const Settings = () => {
                         <button
                           aria-label="Information about the App Secret"
                           style={{
-                            border: 'none',
+                            border: "none",
                             padding: 0,
-                            background: 'transparent',
+                            background: "transparent",
                           }}
                         >
                           <Information aria-hidden={true} />
@@ -391,9 +391,9 @@ const Settings = () => {
                         <button
                           aria-label="Information about OAuth Redirect URI"
                           style={{
-                            border: 'none',
+                            border: "none",
                             padding: 0,
-                            background: 'transparent',
+                            background: "transparent",
                           }}
                         >
                           <Information aria-hidden={true} />
@@ -416,9 +416,9 @@ const Settings = () => {
                         <button
                           aria-label="Information about Deauthorize callback URL"
                           style={{
-                            border: 'none',
+                            border: "none",
                             padding: 0,
-                            background: 'transparent',
+                            background: "transparent",
                           }}
                         >
                           <Information aria-hidden={true} />
@@ -441,9 +441,9 @@ const Settings = () => {
                         <button
                           aria-label="Information about Data Deletion Request URL"
                           style={{
-                            border: 'none',
+                            border: "none",
                             padding: 0,
-                            background: 'transparent',
+                            background: "transparent",
                           }}
                         >
                           <Information aria-hidden={true} />
